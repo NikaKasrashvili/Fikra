@@ -48,9 +48,9 @@ namespace Fikra.Controllers
         }
 
         [HttpPost("create-anonymouse")]
-        public async Task<ActionResult<List<Post>>> PostCreateAnonymous(string anonymousName, IFormFile file)
+        public async Task<ActionResult<List<Post>>> PostCreateAnonymous(IFormFile file)
         {
-            await postsRepository.PostCreateAnonymous(anonymousName, file);
+            await postsRepository.PostCreateAnonymous( file);
             return Ok();
         }
 
@@ -82,15 +82,8 @@ namespace Fikra.Controllers
         [AllowAnonymous]
         [HttpPost("upload")]
         public async Task<ActionResult> UploadPostFile(IFormFile file)
-        { 
-            if (file.FileName.EndsWith(".docx") || file.FileName.EndsWith(".pdf"))
-            {
-                string filePath = Path.Combine(@"C://Uploads/", file.FileName);
-                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
-                {
-                    await file.CopyToAsync(fileStream);
-                }
-            }
+        {
+            await postsRepository.PostCreateAnonymous(file);
             return Ok();
         }
         #endregion

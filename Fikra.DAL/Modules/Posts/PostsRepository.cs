@@ -32,7 +32,7 @@ namespace Fikra.DAL.Modules.Posts
             {
                 posts = await connection.QueryAsync<PostsGetAllDTO>(
                     nameof(PostsGetAll),
-                    new { ForAdmin = forAdmin }, 
+                    new { ForAdmin = forAdmin },
                     commandType: CommandType.StoredProcedure
                     );
             }
@@ -46,7 +46,7 @@ namespace Fikra.DAL.Modules.Posts
             {
                 post = await connection.QuerySingleOrDefaultAsync<PostsGetByIDDTO>(
                     nameof(PostsGetByID),
-                    new { PostID = PostID},
+                    new { PostID = PostID },
                     commandType: CommandType.StoredProcedure
                     );
             }
@@ -108,23 +108,33 @@ namespace Fikra.DAL.Modules.Posts
             }
         }
 
-        public async Task PostCreateAnonymous(string anonymouseAuthor, IFormFile file)
+        public async Task PostCreateAnonymous(IFormFile file)
         {
             var par = new DynamicParameters();
 
-            par.Add("PostAnonymousAuthor", anonymouseAuthor);
-
-            //file saving.. returns string of file location. this string needs to be written to the database
-
-            par.Add("PostFileLocation", "file location string here");
-
-            using (var connection = new SqlConnection(connectionString))
+            string filePath = Path.Combine(@"C://Uploads/", file.FileName);
+            if (file.FileName.EndsWith(".docx") || file.FileName.EndsWith(".pdf"))
             {
-                await connection.ExecuteAsync(
-                    nameof(PostCreateAnonymous),
-                    par,
-                    commandType: CommandType.StoredProcedure
-                );
+                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+
+                par.Add("PostAnonymousAuthor", "anonymouse");
+                par.Add("PostFileLocation", filePath);
+
+                using (var connection = new SqlConnection(connectionString))
+                {
+                    await connection.ExecuteAsync(
+                        nameof(PostCreateAnonymous),
+                        par,
+                        commandType: CommandType.StoredProcedure
+                    );
+                }
+            }
+            else
+            {
+                throw new InvalidOperationException("Incorrect File Format");
             }
         }
         #endregion

@@ -16,7 +16,7 @@ namespace Fikra.DAL.Modules.Posts
         Task<PostsGetByIDDTO> PostsGetByID(int PostID);
         //CREATE
         Task PostsCreate(PostsCreateDTO post);
-        Task PostCreateAnonymous(string anonymousName, IFormFile file);
+        Task PostCreateAnonymous(IFormFile file);
         //UPDATE
         Task PostsUpdate(PostsUpdateDTO post);
         //DELETE
