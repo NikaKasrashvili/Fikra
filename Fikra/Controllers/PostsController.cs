@@ -78,6 +78,21 @@ namespace Fikra.Controllers
             await postsRepository.PostsUpdate(post);
             return Ok();
         }
+
+        [AllowAnonymous]
+        [HttpPost("upload")]
+        public async Task<ActionResult> UploadPostFile(IFormFile file)
+        { 
+            if (file.FileName.EndsWith(".docx") || file.FileName.EndsWith(".pdf"))
+            {
+                string filePath = Path.Combine(@"C://Uploads/", file.FileName);
+                using (Stream fileStream = new FileStream(filePath, FileMode.Create))
+                {
+                    await file.CopyToAsync(fileStream);
+                }
+            }
+            return Ok();
+        }
         #endregion
     }
 }
