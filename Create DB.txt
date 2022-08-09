@@ -1,0 +1,1342 @@
+CREATE DATABASE FIKRA
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[Roles]    Script Date: 8/9/2022 10:03:31 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Roles](
+	[RoleID] [int] IDENTITY(1,1) NOT NULL,
+	[RoleName] [nvarchar](20) NOT NULL,
+	[RoleDateCreated] [datetime] NOT NULL,
+	[RoleIsDeletable] [bit] NOT NULL,
+	[RoleIntCode] [int] NULL,
+ CONSTRAINT [PK_Roles] PRIMARY KEY CLUSTERED 
+(
+	[RoleID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Roles] ADD  CONSTRAINT [DF_Roles_RoleDateCreated]  DEFAULT (getdate()) FOR [RoleDateCreated]
+GO
+
+
+-------
+
+------
+
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[Users]    Script Date: 8/9/2022 10:03:08 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Users](
+	[UserID] [int] IDENTITY(1,1) NOT NULL,
+	[UserFirstname] [nvarchar](50) NULL,
+	[UserLastname] [nvarchar](50) NULL,
+	[UserEmail] [nvarchar](100) NULL,
+	[UserRoleID] [int] NULL,
+	[UserDateCreated] [datetime] NULL,
+	[UserIsBanned] [bit] NULL,
+	[UserPasswordHash] [nvarchar](3000) NULL,
+	[UserIsEnabled] [bit] NOT NULL,
+	[UserImageBase64] [nvarchar](max) NULL,
+	[PasswordResetHash] [nvarchar](max) NULL,
+ CONSTRAINT [PK_Users] PRIMARY KEY CLUSTERED 
+(
+	[UserID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_UserDateCreated]  DEFAULT (getdate()) FOR [UserDateCreated]
+GO
+
+ALTER TABLE [dbo].[Users] ADD  CONSTRAINT [DF_Users_UserIsEnabled]  DEFAULT ((1)) FOR [UserIsEnabled]
+GO
+
+ALTER TABLE [dbo].[Users]  WITH CHECK ADD  CONSTRAINT [FK_Users_Roles] FOREIGN KEY([UserRoleID])
+REFERENCES [dbo].[Roles] ([RoleID])
+GO
+
+ALTER TABLE [dbo].[Users] CHECK CONSTRAINT [FK_Users_Roles]
+GO
+
+
+---------
+
+
+
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[Permissions]    Script Date: 8/9/2022 10:03:47 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Permissions](
+	[PermissionID] [int] IDENTITY(1,1) NOT NULL,
+	[PermissionName] [nvarchar](50) NOT NULL,
+	[PermissionDescription] [nvarchar](max) NULL,
+	[PermissionDateCreated] [datetime] NOT NULL,
+ CONSTRAINT [PK_Permissions] PRIMARY KEY CLUSTERED 
+(
+	[PermissionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Permissions] ADD  CONSTRAINT [DF_Permissions_PermissionDateCreated]  DEFAULT (getdate()) FOR [PermissionDateCreated]
+GO
+
+
+-------
+
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[RolesPermissions]    Script Date: 8/9/2022 10:03:57 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[RolesPermissions](
+	[RoleID] [int] NOT NULL,
+	[PermissionID] [int] NOT NULL,
+	[RolePermissionID] [int] IDENTITY(1,1) NOT NULL,
+ CONSTRAINT [PK_RolesPermissions] PRIMARY KEY CLUSTERED 
+(
+	[RolePermissionID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[RolesPermissions]  WITH CHECK ADD  CONSTRAINT [FK_RolesPermissions_Permissions] FOREIGN KEY([PermissionID])
+REFERENCES [dbo].[Permissions] ([PermissionID])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[RolesPermissions] CHECK CONSTRAINT [FK_RolesPermissions_Permissions]
+GO
+
+ALTER TABLE [dbo].[RolesPermissions]  WITH CHECK ADD  CONSTRAINT [FK_RolesPermissions_Roles] FOREIGN KEY([RoleID])
+REFERENCES [dbo].[Roles] ([RoleID])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[RolesPermissions] CHECK CONSTRAINT [FK_RolesPermissions_Roles]
+GO
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[Posts]    Script Date: 8/9/2022 10:04:22 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Posts](
+	[PostID] [int] IDENTITY(1,1) NOT NULL,
+	[PostTitle] [nvarchar](50) NULL,
+	[PostShortDescription] [nvarchar](200) NULL,
+	[PostFullDescription] [nvarchar](max) NULL,
+	[PostAnonymousAuthor] [nvarchar](50) NULL,
+	[PostIsPublished] [bit] NOT NULL,
+	[PostPublishedByID] [int] NULL,
+	[PostUploadDate] [datetime] NOT NULL,
+	[PostPublishDate] [datetime] NULL,
+	[PostSortIndex] [int] NULL,
+	[PostImageBase64] [nvarchar](max) NULL,
+	[PostFileLocation] [nvarchar](max) NULL,
+	[PostIsDeleted] [bit] NULL,
+ CONSTRAINT [PK_Posts] PRIMARY KEY CLUSTERED 
+(
+	[PostID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Posts] ADD  CONSTRAINT [DF_Posts_PostUploadDate]  DEFAULT (getdate()) FOR [PostUploadDate]
+GO
+
+ALTER TABLE [dbo].[Posts]  WITH CHECK ADD  CONSTRAINT [FK_Posts_Users] FOREIGN KEY([PostPublishedByID])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+
+ALTER TABLE [dbo].[Posts] CHECK CONSTRAINT [FK_Posts_Users]
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[GlobalSettings]    Script Date: 8/9/2022 10:04:40 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[GlobalSettings](
+	[FacebookUrl] [nvarchar](200) NULL,
+	[InstagramUrl] [nvarchar](200) NULL,
+	[TwitterUrl] [nvarchar](200) NULL
+) ON [PRIMARY]
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[Comments]    Script Date: 8/9/2022 10:04:59 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Comments](
+	[CommentID] [int] IDENTITY(1,1) NOT NULL,
+	[CommentUserID] [int] NOT NULL,
+	[CommentParentID] [int] NULL,
+	[CommentIsDeleted] [bit] NOT NULL,
+	[CommentText] [nvarchar](500) NOT NULL,
+	[CommentDateCreated] [datetime] NOT NULL,
+	[CommentPostID] [int] NOT NULL,
+ CONSTRAINT [PK_Comments] PRIMARY KEY CLUSTERED 
+(
+	[CommentID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Comments] ADD  CONSTRAINT [DF_Comments_CommentDateCreated]  DEFAULT (getdate()) FOR [CommentDateCreated]
+GO
+
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Comments] FOREIGN KEY([CommentParentID])
+REFERENCES [dbo].[Comments] ([CommentID])
+GO
+
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Comments]
+GO
+
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Posts] FOREIGN KEY([CommentPostID])
+REFERENCES [dbo].[Posts] ([PostID])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Posts]
+GO
+
+ALTER TABLE [dbo].[Comments]  WITH CHECK ADD  CONSTRAINT [FK_Comments_Users] FOREIGN KEY([CommentUserID])
+REFERENCES [dbo].[Users] ([UserID])
+GO
+
+ALTER TABLE [dbo].[Comments] CHECK CONSTRAINT [FK_Comments_Users]
+GO
+
+
+-------
+
+USE [Fikra]
+GO
+
+/****** Object:  Table [dbo].[Subscribers]    Script Date: 8/9/2022 10:05:17 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE TABLE [dbo].[Subscribers](
+	[SubscriberID] [int] IDENTITY(1,1) NOT NULL,
+	[SubscriberEmail] [nvarchar](100) NULL,
+	[SubscriberDateCreated] [datetime] NULL,
+ CONSTRAINT [PK_Subscribers] PRIMARY KEY CLUSTERED 
+(
+	[SubscriberID] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Subscribers] ADD  CONSTRAINT [DF_Subscribers_SubscriberDateCreated]  DEFAULT (getdate()) FOR [SubscriberDateCreated]
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[CommentCreate]    Script Date: 8/9/2022 10:05:59 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[CommentCreate]
+	@CommentUserID int,
+	@CommentParentID int,
+	@CommentText nVarChar (500),
+	@CommentPostID int
+AS
+
+INSERT INTO Comments(
+	[CommentUserID],
+	[CommentParentID],
+	[CommentText],
+	[CommentPostID],
+	[CommentIsDeleted]
+)
+VALUES(
+	@CommentUserID,
+	@CommentParentID,
+	@CommentText,
+	@CommentPostID,
+	0
+)
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[CommentDeleteByID]    Script Date: 8/9/2022 10:06:17 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[CommentDeleteByID]
+	@CommentID INT
+AS
+UPDATE Comments
+SET CommentIsDeleted = 1
+WHERE CommentID = @CommentID
+GO
+
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[CommentsGetByID]    Script Date: 8/9/2022 10:06:33 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[CommentsGetByID] 
+	@CommentID INT
+AS
+SELECT 
+	C.CommentID,
+	C.CommentUserID,
+	C.CommentParentID,
+	C.CommentText,
+	C.CommentDateCreated	
+	
+FROM Comments C
+LEFT JOIN USERS U ON U.UserID = C.CommentUserID
+WHERE	
+		@CommentID = CommentID 
+GO
+
+
+-------
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[CommentsGetByPostID]    Script Date: 8/9/2022 10:07:19 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[CommentsGetByPostID] 
+	@CommentPostID INT
+AS
+SELECT 
+	C.CommentID,
+	C.CommentUserID,
+	U.UserEmail CommentUsername,
+	C.CommentParentID,
+	C.CommentText,
+	C.CommentDateCreated	
+	
+FROM Comments C
+LEFT JOIN USERS U ON U.UserID = C.CommentUserID
+WHERE	
+		@CommentPostID = CommentPostID AND
+		CommentIsDeleted = 0
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[CommentUpdate]    Script Date: 8/9/2022 10:07:33 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[CommentUpdate]
+	@CommentID INT,
+	@CommentText nVarChar (500)
+AS
+UPDATE Comments
+SET
+
+	CommentText = @CommentText
+
+WHERE CommentID = @CommentID
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PermissionsDeleteByRoleID]    Script Date: 8/9/2022 10:07:48 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PermissionsDeleteByRoleID]
+	@RoleID INT
+AS
+
+DELETE  RP
+FROM    RolesPermissions AS RP
+LEFT JOIN Roles R ON R.RoleID = RP.RoleID
+WHERE   @RoleID = R.RoleID
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PermissionsGetAll]    Script Date: 8/9/2022 10:08:05 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PermissionsGetAll]
+AS
+SELECT 
+	P.PermissionID,
+	P.PermissionName,
+	P.PermissionDescription
+
+FROM [Permissions] P
+
+GO
+
+
+-----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PermissionsGetAllByUserID]    Script Date: 8/9/2022 10:08:20 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PermissionsGetAllByUserID]
+@UserID INT
+AS
+SELECT 
+	P.PermissionID,
+	P.PermissionName,
+	P.PermissionDescription,
+	P.PermissionDateCreated
+FROM [Permissions] P
+LEFT JOIN RolesPermissions RP ON RP.PermissionID = P.PermissionID
+LEFT JOIN Roles R ON R.RoleID = RP.RoleID
+LEFT JOIN Users U ON U.UserRoleID = R.RoleID
+WHERE U.UserID = @UserID
+GO
+
+
+-----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PermissionsGetByRoleID]    Script Date: 8/9/2022 10:08:41 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PermissionsGetByRoleID]
+	@RoleID INT
+AS
+SELECT
+	P.PermissionID,
+	P.PermissionName,
+	P.PermissionDescription
+FROM [dbo].[Permissions] P
+LEFT JOIN RolesPermissions RP ON RP.PermissionID = P.PermissionID
+LEFT JOIN Roles R ON R.RoleID = RP.RoleID
+WHERE @RoleID = R.RoleID
+GO
+
+---
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PostCreateAnonymous]    Script Date: 8/9/2022 10:08:55 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PostCreateAnonymous]
+@PostAnonymousAuthor nvarchar(50),
+@PostFileLocation nvarchar(max)
+AS
+
+INSERT INTO Posts(
+	[PostTitle],
+	[PostAnonymousAuthor],
+	[PostFileLocation],
+	[PostIsPublished]
+	)
+VALUES(
+	'Needs Review',
+	@PostAnonymousAuthor,
+	@PostFileLocation,
+	0
+)
+GO
+
+---
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PostsCreate]    Script Date: 8/9/2022 10:09:11 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PostsCreate]
+	@PostTitle nvarchar(50),
+	@PostShortDescription nvarchar(200),
+	@PostFullDescription nvarchar(max),
+	@PostIsPublished nvarchar(50),
+	@PostPublishedByID int,
+	@PostImageBase64 nvarchar(max),
+	@PostSortIndex int = NULL
+AS
+
+INSERT INTO Posts (
+	[PostTitle],
+	[PostShortDescription],
+	[PostFullDescription],
+	[PostIsPublished],
+	[PostPublishedByID],
+	[PostImageBase64],
+	[PostSortIndex]
+	)
+Values(
+	@PostTitle,
+	@PostShortDescription,
+	@PostFullDescription,
+	@PostIsPublished,
+	@PostPublishedByID,
+	@PostImageBase64,
+	@PostSortIndex
+)
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PostsDeleteByID]    Script Date: 8/9/2022 10:09:37 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PostsDeleteByID]
+
+@PostID INT
+
+AS
+DELETE FROM Posts
+WHERE PostID = @PostID
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PostsGetAll]    Script Date: 8/9/2022 10:09:55 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PostsGetAll]
+
+@ForAdmin BIT
+AS
+IF(@ForAdmin = 1)
+BEGIN
+	SELECT 
+		PostID,
+		PostTitle,
+		PostShortDescription,
+		PostFullDescription,
+		PostAnonymousAuthor,
+		PostPublishedByID,
+		U.UserFirstname PostPublisherFirstname,
+		U.UserLastname PostPublisherLastname,
+		U.UserEmail PostPublisherEmail,
+		PostUploadDate,
+		PostPublishDate,
+		PostSortIndex,
+		PostImageBase64,
+		PostFileLocation,
+		PostIsDeleted,
+		PostIsPublished
+	FROM Posts P
+	LEFT JOIN Users U on U.UserID = P.PostPublishedByID
+END
+ELSE 
+	BEGIN
+	SELECT 
+		PostID,
+		PostTitle,
+		PostShortDescription,
+		PostFullDescription,
+		PostAnonymousAuthor,
+		PostPublishedByID,
+		U.UserFirstname PostPublisherFirstname,
+		U.UserLastname PostPublisherLastname,
+		U.UserEmail PostPublisherEmail,
+		PostUploadDate,
+		PostPublishDate,
+		PostSortIndex,
+		PostImageBase64,
+		PostFileLocation,
+		PostIsDeleted,
+		PostIsPublished
+	FROM Posts P
+	LEFT JOIN Users U on U.UserID = P.PostPublishedByID
+	WHERE P.PostIsPublished = 1 AND P.PostIsDeleted = 0
+END
+
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PostsGetByID]    Script Date: 8/9/2022 10:10:16 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PostsGetByID]
+
+@PostID INT
+
+AS
+SELECT 
+	PostID,
+	PostTitle,
+	PostShortDescription,
+	PostFullDescription,
+	PostAnonymousAuthor,
+	PostPublishedByID,
+	U.UserFirstname PostPublisherFirstname,
+	U.UserLastname PostPublisherLastname,
+	U.UserEmail PostPublisherEmail,
+	PostUploadDate,
+	PostPublishDate,
+	PostSortIndex,
+	PostImageBase64,
+	PostFileLocation
+FROM Posts P
+LEFT JOIN Users U on U.UserID=P.PostPublishedByID
+WHERE @PostID = PostID
+GO
+
+
+-----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[PostsUpdate]    Script Date: 8/9/2022 10:10:32 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[PostsUpdate]
+@PostID INT,
+@PostTitle nvarchar(50),
+@PostShortDescription nvarchar(200),
+@PostFullDescription nvarchar(max),
+@PostAnonymousAuthor nvarchar(50),
+@PostIsPublished nvarchar(50),
+@PostPublishedByID int,
+@PostSortIndex int,
+@PostImageBase64 nvarchar(max)
+AS
+
+UPDATE Posts
+
+SET
+	PostTitle = @PostTitle,
+	PostShortDescription = @PostShortDescription,
+	PostFullDescription = @PostFullDescription,
+	PostAnonymousAuthor = @PostAnonymousAuthor,
+	PostIsPublished = @PostIsPublished,
+	PostPublishedByID = @PostPublishedByID,
+	PostSortIndex = @PostSortIndex,
+	PostImageBase64 = @PostImageBase64
+WHERE PostID = @PostID
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RegisterUser]    Script Date: 8/9/2022 10:10:50 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RegisterUser]
+@UserFirstname nvarchar(50),
+@UserLastname nvarchar(50),
+@UserEmail nvarchar(100),
+@UserImageBase64 nvarchar(max),
+@UserPasswordHash nvarchar(3000),
+@UserRoleID INT
+AS
+INSERT INTO Users(
+	[UserFirstname],
+	[UserLastname],
+	[UserEmail],
+	[UserImageBase64],
+	[UserPasswordHash],
+	[UserIsBanned],
+	[UserRoleID]
+)
+VALUES(
+	@UserFirstname,
+	@UserLastname,
+	@UserEmail,
+	@UserImageBase64,
+	@UserPasswordHash,
+	0,
+	@UserRoleID
+)
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RequestPasswordReset]    Script Date: 8/9/2022 10:11:06 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RequestPasswordReset]
+@UserEmail nvarchar (100),
+@ResetPasswordHash nvarchar (max)
+AS
+Update Users
+Set PasswordResetHash = @ResetPasswordHash
+Where UserEmail =@UserEmail
+GO
+
+
+-----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[ResetPassword]    Script Date: 8/9/2022 10:11:41 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[ResetPassword]
+@PasswordResetHash nvarChar (max),
+@NewPasswordHash nvarchar (max)
+AS
+Update Users
+SET
+UserPasswordHash = @NewPasswordHash
+
+WHERE PasswordResetHash =@PasswordResetHash
+
+UPDATE USERS
+SET 
+	PasswordResetHash = null
+Where @PasswordResetHash = PasswordResetHash
+GO
+
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RoleAddPermission]    Script Date: 8/9/2022 10:11:56 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RoleAddPermission]
+	@RoleID INT,
+	@PermissionID INT
+AS
+INSERT INTO RolesPermissions
+(
+	[RoleID],
+	[PermissionID]
+)
+VALUES(
+	@RoleID,
+	@PermissionID
+)
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RoleGetByID]    Script Date: 8/9/2022 10:12:09 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RoleGetByID]
+@RoleID int
+AS
+SELECT 
+	RoleID,
+	RoleName,
+	RoleDateCreated,
+	RoleIsDeletable,
+	RoleIntCode
+FROM Roles
+Where RoleID=@RoleID
+GO
+
+
+-----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RoleGetByIntCode]    Script Date: 8/9/2022 10:12:28 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RoleGetByIntCode]
+@RoleIntCode INT
+AS
+SELECT RoleID
+FROM Roles
+WHERE RoleIntCode=@RoleIntCode
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RolesCreate]    Script Date: 8/9/2022 10:12:43 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RolesCreate]
+@RoleName nvarchar(20),
+@RoleIsDeletable bit,
+@RoleIntCode int=null
+AS
+INSERT INTO Roles(
+[RoleName],
+[RoleIsDeletable],
+[RoleIntCode]
+)
+VALUES(
+@RoleName,
+@RoleIsDeletable,
+@RoleIntCode
+)
+GO
+
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RolesDeleteByID]    Script Date: 8/9/2022 10:12:59 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RolesDeleteByID]
+@RoleID int
+AS
+DELETE FROM Roles
+Where RoleID=@RoleID
+GO
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RolesGetAll]    Script Date: 8/9/2022 10:13:13 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RolesGetAll]
+AS
+SELECT
+RoleID,
+RoleName,
+RoleIntCode,
+RoleIsDeletable
+FROM Roles
+GO
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[RolesUpdate]    Script Date: 8/9/2022 10:13:37 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[RolesUpdate]
+@RoleID INT,
+@RoleName nVarChar (20)
+AS
+UPDATE Roles
+SET
+RoleName=@RoleName
+WHERE
+RoleID=@RoleID
+GO
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserChangeBannedStatus]    Script Date: 8/9/2022 10:13:52 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserChangeBannedStatus]
+@UserID INT,
+@UserIsBanned Bit 
+AS
+Update Users
+Set UserIsBanned = @UserIsBanned
+
+where UserID = @UserID
+GO
+
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserChangePassword]    Script Date: 8/9/2022 10:14:23 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserChangePassword]
+	@UserID Int,
+	@UserPasswordHash nvarchar(max)
+AS
+UPDATE Users
+SET
+	UserPasswordHash = @UserPasswordHash
+WHERE 
+	UserID=@UserID
+GO
+
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserGetByEmail]    Script Date: 8/9/2022 10:14:41 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserGetByEmail]
+@Input nvarchar(50)
+AS
+SELECT
+	U.UserID,
+	U.UserFirstname,
+	U.UserLastname,
+	U.UserEmail,
+	U.UserRoleID,
+	R.RoleName UserRoleName,
+	U.UserDateCreated,
+	U.UserIsBanned,
+	U.UserPasswordHash,
+	U.UserIsEnabled,
+	U.UserImageBase64,
+	U.UserPasswordHash
+FROM Users U
+LEFT JOIN Roles R ON R.RoleID = U.UserRoleID
+WHERE UserEmail = @Input
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserGetByEmailAdminPanel]    Script Date: 8/9/2022 10:14:56 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserGetByEmailAdminPanel]
+@UserEmail nVarChar (100)
+AS
+SELECT TOP (1000) [UserID]
+      ,[UserFirstname]
+      ,[UserLastname]
+      ,[UserEmail]
+      ,[UserRoleID]
+      ,[UserDateCreated]
+      ,[UserIsBanned]
+      ,[UserIsEnabled]
+      ,[UserImageBase64]
+FROM [Fikra].[dbo].[Users]  
+WHERE UserEmail=@UserEmail
+GO
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserRoleChange]    Script Date: 8/9/2022 10:15:11 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserRoleChange]
+@UserID INT,
+@UserRoleID INT
+AS
+UPDATE Users
+SET
+UserRoleID=@UserRoleID
+Where UserID=@UserID
+GO
+
+----
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserRoleGetByUserID]    Script Date: 8/9/2022 10:15:30 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserRoleGetByUserID]
+	@UserID INT
+AS
+SELECT 
+	R.RoleID,
+	R.RoleName
+FROM Roles R
+LEFT JOIN Users U ON U.UserRoleID = R.RoleID
+WHERE U.UserID = @UserID
+GO
+
+
+----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UsersGetAll]    Script Date: 8/9/2022 10:15:47 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UsersGetAll]
+AS
+SELECT 
+	UserID,
+	UserFirstName,
+	UserLastname,
+	UserEmail,
+	UserRoleID,
+	UserDateCreated,
+	UserIsBanned,
+	UserIsEnabled,
+	R.Rolename UserRoleName
+
+
+FROM Users U
+LEFT JOIN Roles R on R.RoleID = U.UserRoleID
+GO
+
+
+-----
+
+USE [Fikra]
+GO
+
+/****** Object:  StoredProcedure [dbo].[UserUpdate]    Script Date: 8/9/2022 10:16:03 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+CREATE PROCEDURE [dbo].[UserUpdate]
+	@UserID INT,
+	@UserFirstName nVarChar (50),
+	@UserLastName nVarChar (50),
+	@UserImageBase64 nVarChar(max)
+AS
+UPDATE Users
+SET
+	UserFirstname = @UserFirstname,
+	UserLastname =@UserLastName,
+	UserImageBase64 =@UserImageBase64
+
+WHERE UserID= @UserID
+GO
+
+-------
+INSERT INTO ROLES(
+	[RoleName],
+	[RoleIsDeletable],
+	[RoleIntCode]
+)
+VALUES(
+	'Admin',
+	0,
+	1
+)
+
+INSERT INTO ROLES(
+	[RoleName],
+	[RoleIsDeletable],
+	[RoleIntCode]
+)
+VALUES(
+	'User',
+	0,
+	2
+)
+
+-------
+
+INSERT INTO [dbo].[Users]
+  (
+	[UserFirstname],
+	[UserLastname],
+	[UserEmail],
+	[UserRoleID],
+	[UserIsBanned],
+	[UserPasswordHash],
+	[UserIsEnabled]
+  )
+  VALUES(
+	'Admin',
+	'Admin',
+	'admin@admin.com',
+	1,
+	0,
+	'8AF3982673455323883C06FA59D2872A',
+	1
+  )
+
+    INSERT INTO [dbo].[Users]
+  (
+	[UserFirstname],
+	[UserLastname],
+	[UserEmail],
+	[UserRoleID],
+	[UserIsBanned],
+	[UserPasswordHash],
+	[UserIsEnabled]
+  )
+  VALUES(
+	'User',
+	'User',
+	'User@User.com',
+	1,
+	0,
+	'8AF3982673455323883C06FA59D2872A',
+	1
+  )
+
+-------
+
+INSERT INTO [dbo].[Permissions]
+(
+	[PermissionName]
+)
+VALUES
+	('PermissionsGetAll'),
+	('RoleGetPermissions'),
+	('PostCreateAuthorised'),
+	('DeletePostByIDAsync'),
+	('RolesCreate'),
+	('RolesDelete'),
+	('RolesGetAll'),
+	('RoleGetByID'),
+	('RolesUpdate'),
+	('RoleAddUpdatePermissions'),
+	('UserChangeBannedStatus'),
+	('GetAllUsers'),
+	('UserRoleChange'),
+	('UserGetByEmailAdminPanel')
+
+------
+
+  INSERT INTO [dbo].[RolesPermissions](
+	  [RoleID],
+	  [PermissionID]
+  )
+  VALUES
+	(1,1),
+	(1,2),
+	(1,3),
+	(1,4),
+	(1,5),
+	(1,6),
+	(1,7),
+	(1,8),
+	(1,9),
+	(1,10),
+	(1,11),
+	(1,12),
+	(1,13),
+	(1,14)
+
+
+
