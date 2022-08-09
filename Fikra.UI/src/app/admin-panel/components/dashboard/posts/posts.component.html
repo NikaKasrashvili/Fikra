@@ -1,0 +1,20 @@
+<table *ngIf="posts" class="table">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Title</th>
+      <th scope="col">Author</th>
+      <th scope="col">Deleted</th>
+      <th scope="col">Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let post of posts">
+      <th>{{ post.postID }}</th>
+      <td>{{ post.postTitle }}</td>
+      <td>{{ post.postPublisherEmail }}</td>
+      <td>{{ post.postIsDeleted }}</td>
+      <td><a class="btn btn-success" [routerLink]="post.postID">Details</a></td>
+    </tr>
+  </tbody>
+</table>

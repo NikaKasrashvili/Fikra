@@ -1,0 +1,31 @@
+<ng-container *ngIf="detailedPost">
+  <h4 class="display-4">
+    {{ detailedPost.postTitle }}
+  </h4>
+  <h5 class="display-4">
+    {{ detailedPost.postPublisherFirstname }}
+    {{ detailedPost.postPublisherLastname }} |
+    {{ detailedPost.postUploadDate | date }}
+  </h5>
+  <P>
+    {{ detailedPost.postShortDescription }}
+  </P>
+  <img [src]="detailedPost.postImageBase64" alt="" />
+  <P>
+    {{ detailedPost.postFullDescription }}
+  </P>
+</ng-container>
+
+<ng-container *ngIf="!detailedPost">
+  <h3 class="display-4">Loading ...</h3>
+</ng-container>
+
+<button class="btn btn-primary mb-3" routerLink="../../">Back</button>
+<br />
+<button
+  *ngIf="authService.isAdmin() && detailedPost!=null"
+  class="btn btn-danger"
+  (click)="deletePost()"
+>
+  delete
+</button>

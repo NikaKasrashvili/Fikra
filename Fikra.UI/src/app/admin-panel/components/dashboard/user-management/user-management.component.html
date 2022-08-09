@@ -1,0 +1,20 @@
+<table *ngIf="users" class="table">
+    <thead>
+      <tr>
+        <th scope="col">First Name</th>
+        <th scope="col">Last Name</th>
+        <th scope="col">Email</th>
+        <th scope="col">Role</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let user of users">
+        <th>{{ user.userFirstname }}</th>
+        <td>{{ user.userLastname }}</td>
+        <td>{{ user.userEmail }}</td>
+        <td>{{ user.userRoleName }}</td>
+        <td><a class="btn btn-success" [routerLink]="user.userEmail">Details</a></td>
+      </tr>
+    </tbody>
+  </table>
+  

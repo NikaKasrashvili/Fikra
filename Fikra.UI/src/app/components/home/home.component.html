@@ -1,0 +1,21 @@
+
+<div class="row" *ngIf="posts">
+  <div class="col-lg-4 col-md-6 col-sm-12" *ngFor="let post of posts">
+    <div class="card mb-4">
+      <img
+        class="card-img-top"
+        [src]="post.postImageBase64"
+        alt="Card image cap"
+      />
+      <div class="card-body">
+        <h5 class="card-title">{{ post.postTitle }}</h5>
+        <p class="card-text">
+          {{ post.postShortDescription }}
+        </p>
+        <a [routerLink]="'posts/' + post.postID" class="btn btn-primary"
+          >Go somewhere</a
+        >
+      </div>
+    </div>
+  </div>
+</div>

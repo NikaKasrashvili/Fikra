@@ -1,0 +1,18 @@
+<table *ngIf="roles" class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Name</th>
+        <th scope="col">Deletable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let role of roles">
+        <th>{{ role.roleID }}</th>
+        <td>{{ role.roleName }}</td>
+        <td>{{ role.roleIsDeletable }}</td>
+        <td><a class="btn btn-success" [routerLink]="role.roleID">Details</a></td>
+      </tr>
+    </tbody>
+  </table>
+  
