@@ -16,7 +16,6 @@
   <ItemGroup>
     <ProjectReference Include="..\Fikra.DAL\Fikra.DAL.csproj" />
     <ProjectReference Include="..\Fikra.UserManagement\Fikra.UserManagement.csproj" />
-    <ProjectReference Include="..\FikraModels\FikraModels.csproj" />
   </ItemGroup>
 
 </Project>

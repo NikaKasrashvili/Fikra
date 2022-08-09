@@ -1,7 +1,6 @@
 ﻿using Fikra.Constants;
 using Fikra.DAL.Modules.Posts;
 using Fikra.DAL.Modules.Posts.PostDTO;
-using FikraModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
@@ -48,9 +47,9 @@ namespace Fikra.Controllers
         }
 
         [HttpPost("create-anonymouse")]
-        public async Task<ActionResult<List<Post>>> PostCreateAnonymous(IFormFile file)
+        public async Task<ActionResult> PostCreateAnonymous(IFormFile file)
         {
-            await postsRepository.PostCreateAnonymous( file);
+            await postsRepository.PostCreateAnonymous(file);
             return Ok();
         }
 

@@ -3,13 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.2.32602.215
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fikra", "Fikra\Fikra.csproj", "{502C5868-C5B0-4064-85C2-ABA57C37508C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fikra", "Fikra\Fikra.csproj", "{502C5868-C5B0-4064-85C2-ABA57C37508C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FikraModels", "FikraModels\FikraModels.csproj", "{BE9708AB-00CA-4390-B3FF-36D0BACCBB39}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fikra.DAL", "Fikra.DAL\Fikra.DAL.csproj", "{CD40E563-0881-4C80-8D45-8C26C6EA0FFD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fikra.DAL", "Fikra.DAL\Fikra.DAL.csproj", "{CD40E563-0881-4C80-8D45-8C26C6EA0FFD}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fikra.UserManagement", "Fikra.UserManagement\Fikra.UserManagement.csproj", "{8D514BA3-FDAD-4A1D-A4B8-892DC8602FA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Fikra.UserManagement", "Fikra.UserManagement\Fikra.UserManagement.csproj", "{8D514BA3-FDAD-4A1D-A4B8-892DC8602FA9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,10 +19,6 @@ Global
 		{502C5868-C5B0-4064-85C2-ABA57C37508C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{502C5868-C5B0-4064-85C2-ABA57C37508C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{502C5868-C5B0-4064-85C2-ABA57C37508C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{BE9708AB-00CA-4390-B3FF-36D0BACCBB39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{BE9708AB-00CA-4390-B3FF-36D0BACCBB39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{BE9708AB-00CA-4390-B3FF-36D0BACCBB39}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{BE9708AB-00CA-4390-B3FF-36D0BACCBB39}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CD40E563-0881-4C80-8D45-8C26C6EA0FFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CD40E563-0881-4C80-8D45-8C26C6EA0FFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD40E563-0881-4C80-8D45-8C26C6EA0FFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
